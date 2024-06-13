@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"net/http"
+	"go-challenge/controllers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,18 +28,7 @@ type GraphPoint struct {
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
 
-	router.POST("/analyze", func(c *gin.Context) {
-		var contracts []OptionsContract
-
-		if err := c.ShouldBindJSON(&contracts); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-
-		// Your code here
-
-		c.JSON(http.StatusOK, gin.H{"message": "Your code here"})
-	})
+	router.POST("/analyze", controllers.AnalysisHandler)
 
 	return router
 }
