@@ -1,0 +1,18 @@
+{
+    // Purposely not ignored for configuration reference
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Package",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "/Users/gauravmalwe/work/golang-dev-logic-challenge-Gaurav-malwe/main.go", // Path to your main.go    
+            "env": {
+                "MIN_PRICE": "0.0",
+                "MAX_PRICE": "200.0",
+                "STEP": "1.0",
+            },
+        }
+    ]
+}

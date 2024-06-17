@@ -1,0 +1,7 @@
+stack: local
+APP_NAME: "riskreward"
+MIN_PRICE: 0.0,
+MAX_PRICE: 200.0,
+STEP: 1.0,
+
+

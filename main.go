@@ -2,16 +2,30 @@ package main
 
 import (
 	"net/http"
-	"fmt"
+
+	"github.com/Aries-Financial-inc/golang-dev-logic-challenge-gaurav-malwe/config"
+	"github.com/Aries-Financial-inc/golang-dev-logic-challenge-gaurav-malwe/controllers"
+	"github.com/Aries-Financial-inc/golang-dev-logic-challenge-gaurav-malwe/log"
+	"github.com/Aries-Financial-inc/golang-dev-logic-challenge-gaurav-malwe/routes"
+	"github.com/Aries-Financial-inc/golang-dev-logic-challenge-gaurav-malwe/service"
 )
 
 func main() {
-	http.HandleFunc("/analyze", analyzeHandler)
+	cfg := config.GetConfig()
 
-	fmt.Println("Starting server on port 8080")
-	http.ListenAndServe(":8080", nil)
-}
+	log.Info("Starting Risk Reward server::", cfg.GetString("server_port"))
 
-func analyzeHandler(w http.ResponseWriter, r *http.Request) {
-	// Your code here
+	// Router, ctrl, svc and server intialization
+	riskRewardServer := routes.NewRiskRewardServer()
+	svc := service.New(cfg)
+	ctrl := controllers.New(svc, cfg)
+
+	// Register handlers
+	riskRewardServer.SetupRouter(ctrl)
+
+	r := riskRewardServer.Router
+	// Listen and serve
+	if err := http.ListenAndServe(":"+cfg.GetString("server_port"), r); err != nil {
+		log.Fatal("http.ListenAndServe Failed")
+	}
 }

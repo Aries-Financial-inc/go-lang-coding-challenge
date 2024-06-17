@@ -1,45 +1,37 @@
 package routes
 
 import (
-	"net/http"
-
+	"github.com/Aries-Financial-inc/golang-dev-logic-challenge-gaurav-malwe/controllers"
+	"github.com/Aries-Financial-inc/golang-dev-logic-challenge-gaurav-malwe/middleware"
 	"github.com/gin-gonic/gin"
 )
 
-// OptionsContract structure for the request body
-type OptionsContract struct {
-	// Your code here
+type RiskRewardServer struct {
+	Router *gin.Engine
 }
 
-// AnalysisResult structure for the response body
-type AnalysisResult struct {
-	GraphData       []GraphPoint `json:"graph_data"`
-	MaxProfit       float64      `json:"max_profit"`
-	MaxLoss         float64      `json:"max_loss"`
-	BreakEvenPoints []float64    `json:"break_even_points"`
+// NewRiskRewardServer creates a new instance of RiskRewardServer and initializes its Router field with a default Gin engine.
+//
+// Returns:
+// - *RiskRewardServer: A pointer to the newly created RiskRewardServer instance.
+func NewRiskRewardServer() *RiskRewardServer {
+	server := new(RiskRewardServer)
+	server.Router = gin.Default()
+	return server
 }
 
-// GraphPoint structure for X & Y values of the risk & reward graph
-type GraphPoint struct {
-	X float64 `json:"x"`
-	Y float64 `json:"y"`
-}
+// SetupRouter sets up the routes for the RiskRewardServer.
+//
+// Parameters:
+// - c: an instance of controllers.Controller.
+// - middlewares: variadic list of gin.HandlerFunc for middleware.
+func (s *RiskRewardServer) SetupRouter(c controllers.Controller, middlewares ...gin.HandlerFunc) {
+	group := s.Router.Group("/",
+		middleware.TransactionInMiddleware(), // transaction middleware
+		middleware.RequestLogger(),           // logger middleware
+	) // group for all routes and middlewares. Here the global middlewares are applied for all route groups
+	group.Use(middlewares...)
 
-func SetupRouter() *gin.Engine {
-	router := gin.Default()
+	group.POST("/analyze", c.AnalysisHandler)
 
-	router.POST("/analyze", func(c *gin.Context) {
-		var contracts []OptionsContract
-
-		if err := c.ShouldBindJSON(&contracts); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-
-		// Your code here
-
-		c.JSON(http.StatusOK, gin.H{"message": "Your code here"})
-	})
-
-	return router
 }
